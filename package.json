@@ -1,0 +1,12 @@
+{
+	"name": "hll",
+	"version": "0.0.1",
+	"repo": "avz/hll",
+	"description": "HyperLogLog implementation",
+	"keywords": ["hll", "hyperloglog", "loglog"],
+	"license": "BSD",
+	"src": ["src/hll.h", "src/hll.c"],
+	"dependencies": {
+		"jwerle/murmurhash.c": "0.0.3"
+	}
+}
