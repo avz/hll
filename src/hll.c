@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <math.h>
+#include <string.h>
 
 #include <stdio.h>
 
 #include "../deps/murmurhash/murmurhash.h"
 #include "hll.h"
 
-static inline unsigned char _hll_rank(uint32_t hash, uint8_t bits) {
+static __inline unsigned char _hll_rank(uint32_t hash, uint8_t bits) {
 	uint8_t i;
 
 	for(i = 1; i <= 32 - bits; i++) {
@@ -74,7 +75,7 @@ double hll_count(const struct HLL *hll) {
 	alpha_mm *= (hll->size * hll->size);
 
 	double sum = 0;
-	for(int i = 0; i < hll->size; i++) {
+	for(uint32_t i = 0; i < hll->size; i++) {
 		sum += 1.0 / (1 << hll->registers[i]);
 	}
 
@@ -83,7 +84,7 @@ double hll_count(const struct HLL *hll) {
 	if (estimate <= 5.0 / 2.0 * hll->size) {
 		int zeros = 0;
 
-		for(int i = 0; i < hll->size; i++)
+		for(uint32_t i = 0; i < hll->size; i++)
 			zeros += (hll->registers[i] == 0);
 
 		if(zeros)
@@ -94,4 +95,43 @@ double hll_count(const struct HLL *hll) {
 	}
 
 	return estimate;
+}
+
+int hll_merge(struct HLL *dst, const struct HLL *src) {
+	if(dst->bits != src->bits) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	for(uint32_t i = 0; i < dst->size; i++) {
+		if(src->registers[i] > dst->registers[i])
+			dst->registers[i] = src->registers[i];
+	}
+
+	return 0;
+}
+
+int hll_load(struct HLL *hll, void *registers, size_t size) {
+	uint8_t bits = 0;
+
+	while(size) {
+		bits++;
+
+		if(size & 1)
+			break;
+
+		size >>= 1;
+	}
+
+	if(!bits || (1 << bits) != size) {
+		errno = EINVAL;
+		return -1;
+	}
+
+	if(hll_init(hll, bits) == -1)
+		return -1;
+
+	memcpy(hll->registers, registers, size);
+
+	return 0;
 }

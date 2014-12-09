@@ -12,7 +12,11 @@ struct HLL {
 };
 
 int hll_init(struct HLL *hll, uint8_t bits);
+int hll_load(struct HLL *hll, void *registers, size_t size);
+
 void hll_destroy(struct HLL *hll);
+
+int hll_merge(struct HLL *dst, const struct HLL *src);
 
 void hll_add(struct HLL *hll, const void *buf, size_t len);
 void hll_add_hash(struct HLL *hll, uint32_t hash);
