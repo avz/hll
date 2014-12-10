@@ -5,10 +5,10 @@
 
 #include <stdio.h>
 
-#include "../deps/murmurhash/murmurhash.h"
+#include "../deps/MurmurHash3/MurmurHash3.h"
 #include "hll.h"
 
-static __inline unsigned char _hll_rank(uint32_t hash, uint8_t bits) {
+static __inline uint8_t _hll_rank(uint32_t hash, uint8_t bits) {
 	uint8_t i;
 
 	for(i = 1; i <= 32 - bits; i++) {
@@ -40,8 +40,8 @@ void hll_destroy(struct HLL *hll) {
 	hll->registers = NULL;
 }
 
-void hll_add(struct HLL *hll, const void *buf, size_t len) {
-	uint32_t hash = murmurhash((const char *)buf, (uint32_t)len, 0x5f61767a);
+void hll_add(struct HLL *hll, const void *buf, size_t size) {
+	uint32_t hash = MurmurHash3_x86_32((const char *)buf, (int)size, 0x5f61767a);
 
 	hll_add_hash(hll, hash);
 }
@@ -111,7 +111,7 @@ int hll_merge(struct HLL *dst, const struct HLL *src) {
 	return 0;
 }
 
-int hll_load(struct HLL *hll, void *registers, size_t size) {
+int hll_load(struct HLL *hll, const void *registers, size_t size) {
 	uint8_t bits = 0;
 
 	while(size) {

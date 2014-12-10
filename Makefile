@@ -3,7 +3,7 @@ LD=$(CC)
 
 PROJECT=hll
 
-OBJS=main.o hll.o murmurhash.o
+OBJS=main.o hll.o MurmurHash3.o
 VPATH=src
 
 CFLAGS?=-O2
@@ -16,8 +16,8 @@ $(PROJECT): $(OBJS)
 .c.o:
 	$(CC) -c -std=c90 -g -Wall -Wconversion -Werror -D_GNU_SOURCE -D_FILE_OFFSET_BITS=64 $(CFLAGS) src/$*.c
 
-murmurhash.o:
-	$(CC) -c -g $(CFLAGS) deps/murmurhash/murmurhash.c
+MurmurHash3.o:
+	$(CC) -c -g $(CFLAGS) deps/MurmurHash3/MurmurHash3.c
 
 clean:
 	rm -f *.o "$(PROJECT)"
