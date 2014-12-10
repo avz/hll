@@ -1,23 +1,51 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <unistd.h>
+#include <errno.h>
+#include <string.h>
 #include "hll.h"
 
 int main(int argc, const char *argv[]) {
 	struct HLL hll;
+	char line[16*1024];
+	ssize_t size = 0;
+	ssize_t r, i, last;
 
 	hll_init(&hll, 15);
 
-	srandomdev();
-	long salt = random();
+	while((r = read(STDIN_FILENO, line + size, sizeof(line) - (size_t)size))) {
+		if(r == -1) {
+			perror("read");
+			exit((errno & 0xff) ? errno & 0xff : 1);
+		}
 
-	for(uint32_t i = 0; i < 10000000; i++) {
-		uint32_t r = (uint32_t)salt + i;
+		last = 0;
 
-		hll_add(&hll, &r, 4);
+		for(i = size; i < size + r; i++) {
+			if(line[i] == '\n') {
+				hll_add(&hll, line + last, (size_t)(i - last));
+				last = i + 1;
+			}
+		}
+
+		if(last < size) {
+			memmove(line, line + last, size - last);
+			size = size - last;
+		} else {
+			size = 0;
+		}
+
+		if(size == sizeof(line)) {
+			fprintf(stderr, "%s: line is too long, ignore\n", argv[0]);
+			size = 0;
+		}
 	}
 
-	printf("%f\n", hll_count(&hll));
-	hll_destroy(&hll);
+	if(size) {
+		hll_add(&hll, line, (size_t)size);
+	}
+
+	printf("%llu\n", (unsigned long long)hll_count(&hll));
 
 	return 0;
 }

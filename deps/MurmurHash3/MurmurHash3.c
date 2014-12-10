@@ -7,9 +7,9 @@
 
 #define	ROTL32(x,r)	(x << r) | (x >> (32 - r))
 
-uint32_t MurmurHash3_x86_32(const void * key, int len, uint32_t seed) {
+uint32_t MurmurHash3_x86_32(const void * key, uint32_t len, uint32_t seed) {
 	const uint8_t * data = (const uint8_t*)key;
-	const int nblocks = len / 4;
+	const int32_t nblocks = len / 4;
 
 	uint32_t h1 = seed;
 
@@ -36,8 +36,8 @@ uint32_t MurmurHash3_x86_32(const void * key, int len, uint32_t seed) {
 
 	switch(len & 3)
 	{
-		case 3: k1 ^= tail[2] << 16;
-		case 2: k1 ^= tail[1] << 8;
+		case 3: k1 ^= (uint32_t)tail[2] << 16;
+		case 2: k1 ^= (uint32_t)tail[1] << 8;
 		case 1: k1 ^= tail[0];
 				k1 *= c1; k1 = ROTL32(k1,15); k1 *= c2; h1 ^= k1;
 	};
