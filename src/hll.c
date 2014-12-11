@@ -41,7 +41,7 @@ void hll_destroy(struct HLL *hll) {
 }
 
 void hll_add(struct HLL *hll, const void *buf, size_t size) {
-	uint32_t hash = MurmurHash3_x86_32((const char *)buf, (int)size, 0x5f61767a);
+	uint32_t hash = MurmurHash3_x86_32((const char *)buf, (uint32_t)size, 0x5f61767a);
 
 	hll_add_hash(hll, hash);
 }
