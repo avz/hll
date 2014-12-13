@@ -25,5 +25,5 @@ MurmurHash3.o:
 	$(CC) -c -std=c90 -g -Wall -Wconversion -Werror $(CFLAGS) deps/MurmurHash3/MurmurHash3.c
 
 clean:
-	rm -f *.o bin/"$(PROJECT)" lib/hll.a
+	rm -f *.o bin/hll-count lib/hll.a
 	rm -rf bin lib
