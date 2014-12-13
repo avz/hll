@@ -28,6 +28,8 @@ int main(int argc, const char *argv[]) {
 			}
 		}
 
+		size += r;
+
 		if(last < size) {
 			memmove(line, line + last, size - last);
 			size = size - last;
