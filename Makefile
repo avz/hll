@@ -1,20 +1,20 @@
 CC=cc
 LD=$(CC)
 
-PROJECT=hll-count
+PROJECT=hll
 
 OBJS=hll.o MurmurHash3.o
 VPATH=src
 
 CFLAGS?=-O2
 
-build: lib bin
+build: bin/hll-count
 
-bin: lib main.o
+bin/hll-count: lib/libhyperloglog.a main.o
 	mkdir -p bin
-	$(LD) -lc $(LDFLAGS) -Llib -lhyperloglog main.o -o "bin/$(PROJECT)"
+	$(LD) -lc $(LDFLAGS) -Llib -lhyperloglog main.o -o bin/hll-count
 
-lib: $(OBJS)
+lib/libhyperloglog.a: $(OBJS)
 	mkdir -p lib
 	ar rcs lib/libhyperloglog.a $(OBJS)
 
