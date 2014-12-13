@@ -9,6 +9,7 @@
 		"src/hll.h",
 		"src/hll.c",
 		"deps/MurmurHash3/MurmurHash3.c",
-		"deps/MurmurHash3/MurmurHash3.h"
+		"deps/MurmurHash3/MurmurHash3.h",
+		"Makefile"
 	]
 }
