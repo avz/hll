@@ -74,7 +74,7 @@ static double count_stdin(uint8_t bits) {
 		size += r;
 
 		if(last < size) {
-			memmove(line, line + last, size - last);
+			memmove(line, line + last, (size_t)(size - last));
 			size = size - last;
 		} else {
 			size = 0;
