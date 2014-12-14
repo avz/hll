@@ -18,4 +18,6 @@ extern int hll_merge(struct HLL *dst, const struct HLL *src);
 extern void hll_add(struct HLL *hll, const void *buf, size_t size);
 extern double hll_count(const struct HLL *hll);
 
+extern uint32_t _hll_hash(const struct HLL *hll);
+
 #endif	/* AVZ_HLL_H */

@@ -139,3 +139,7 @@ int hll_load(struct HLL *hll, const void *registers, size_t size) {
 
 	return 0;
 }
+
+extern uint32_t _hll_hash(const struct HLL *hll) {
+	return MurmurHash3_x86_32(hll->registers, (uint32_t)hll->size, 0);
+}
