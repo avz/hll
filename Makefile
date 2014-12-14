@@ -29,4 +29,4 @@ clean:
 	rm -rf bin lib
 
 test:
-	true
+	sh ./tests/hll-count.sh
