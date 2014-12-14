@@ -6,13 +6,13 @@ TESTLOG=/tmp/avz.hll-count.test
 
 rm -f "$TESTLOG"
 
-seq -s '-hll-count-test\n' 0 99 >> $TESTLOG
-seq -s '-hll-count-test\n' 0 999999 >> $TESTLOG
-seq -s '-hll-count-test\n' 0 99999 >> $TESTLOG
-seq -s '-hll-count-test\n' 0 900000 >> $TESTLOG
-seq -s '-hll-count-test\n' 0 9999 >> $TESTLOG
-seq -s '-hll-count-test\n' 0 32121 >> $TESTLOG
-seq -s '-hll-count-test\n' 0 9923 >> $TESTLOG
+seq -s '-hll-count-test:' 0 99 | tr : '\n' >> $TESTLOG
+seq -s '-hll-count-test:' 0 999999 | tr : '\n' >> $TESTLOG
+seq -s '-hll-count-test:' 0 99999 | tr : '\n' >> $TESTLOG
+seq -s '-hll-count-test:' 0 900000 | tr : '\n' >> $TESTLOG
+seq -s '-hll-count-test:' 0 9999 | tr : '\n' >> $TESTLOG
+seq -s '-hll-count-test:' 0 32121 | tr : '\n' >> $TESTLOG
+seq -s '-hll-count-test:' 0 9923 | tr : '\n' >> $TESTLOG
 
 # wc -l: 2052147
 # sort -u | wc -l: 1000000
