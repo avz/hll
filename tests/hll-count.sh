@@ -6,13 +6,13 @@ TESTLOG=/tmp/avz.hll-count.test
 
 rm -f "$TESTLOG"
 
-seq -s '-hll-count-test:' 0 99 | tr : '\n' >> $TESTLOG
-seq -s '-hll-count-test:' 0 999999 | tr : '\n' >> $TESTLOG
-seq -s '-hll-count-test:' 0 99999 | tr : '\n' >> $TESTLOG
-seq -s '-hll-count-test:' 0 900000 | tr : '\n' >> $TESTLOG
-seq -s '-hll-count-test:' 0 9999 | tr : '\n' >> $TESTLOG
-seq -s '-hll-count-test:' 0 32121 | tr : '\n' >> $TESTLOG
-seq -s '-hll-count-test:' 0 9923 | tr : '\n' >> $TESTLOG
+seq 0 99 >> $TESTLOG
+seq 0 999999 >> $TESTLOG
+seq 0 99999 >> $TESTLOG
+seq 0 900000 >> $TESTLOG
+seq 0 9999 >> $TESTLOG
+seq 0 32121 >> $TESTLOG
+seq 0 9923 >> $TESTLOG
 
 # wc -l: 2052147
 # sort -u | wc -l: 1000000
@@ -22,10 +22,10 @@ ERRORS=0
 almost_equal() {
 	real=$1
 	expected=$2
-	percent=$3
+	delta=$3
 
-	min=$(($expected * (100 - $percent) / 100))
-	max=$(($expected * (100 + $percent) / 100))
+	min=$(($expected * (1000 - $delta) / 1000))
+	max=$(($expected * (1000 + $delta) / 1000))
 
 	test "$real" -ge "$min" -a "$real" -le "$max"
 }
@@ -40,34 +40,38 @@ test_count() {
 	hash=$(echo "$result" | cut -d' ' -f1)
 	count=$(echo "$result" | cut -d' ' -f2)
 
-	if ! almost_equal "$count" "$expected_count" 2; then
-		echo "bits=$bits: count $expected_count expected but $count given" 1>&2
-		ERRORS=$(($ERRORS + 1))
-	fi
+	if [ 'generate' = '' ]; then
+		echo test_count $bits $count $hash
+	else
+		if ! almost_equal "$count" "$expected_count" 1; then
+			echo "bits=$bits: count $expected_count expected but $count given" 1>&2
+			ERRORS=$(($ERRORS + 1))
+		fi
 
-	if [ ! "$hash" -eq "$expected_hash" ]; then
-		echo "bits=$bits: hash $expected_hash expected but $hash given" 1>&2
-		ERRORS=$(($ERRORS + 1))
+		if [ ! "$hash" -eq "$expected_hash" ]; then
+			echo "bits=$bits: hash $expected_hash expected but $hash given" 1>&2
+			ERRORS=$(($ERRORS + 1))
+		fi
 	fi
 }
 
-test_count 4 1103249 596423999
-test_count 5 1412738 1985856639
-test_count 6 1227010 133366178
-test_count 7 1124294 2975110038
-test_count 8 1063738 3756456334
-test_count 9 1020270 2227760783
-test_count 10 1009955 2097733064
-test_count 11 986528 2297798794
-test_count 12 984061 962787301
-test_count 13 975120 2698402778
-test_count 14 969761 4090902387
-test_count 15 987246 3745929533
-test_count 16 997976 879953779
-test_count 17 999960 160211267
-test_count 18 1001805 2936371152
-test_count 19 1000120 1575531669
-test_count 20 999507 3050768488
+test_count 4 971275 1449433227
+test_count 5 1184174 1428984302
+test_count 6 1156086 223517797
+test_count 7 975103 3375047953
+test_count 8 1003361 1098260576
+test_count 9 994144 1411594926
+test_count 10 969885 2580248892
+test_count 11 999800 4085949792
+test_count 12 998459 3226586891
+test_count 13 1018742 2509337006
+test_count 14 1011393 620697087
+test_count 15 1007837 2192380712
+test_count 16 1005185 3647273428
+test_count 17 1003818 249692169
+test_count 18 1005777 3364646580
+test_count 19 999562 3771204784
+test_count 20 1000288 3106131572
 
 if [ $ERRORS -gt 0 ]; then
 	echo "Errors count: $ERRORS" 1>&2
