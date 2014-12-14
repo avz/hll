@@ -28,7 +28,7 @@ int hll_init(struct HLL *hll, uint8_t bits) {
 	}
 
 	hll->bits = bits;
-	hll->size = 1 << bits;
+	hll->size = (size_t)1 << bits;
 	hll->registers = calloc(hll->size, 1);
 
 	return 0;
@@ -57,6 +57,8 @@ void hll_add(struct HLL *hll, const void *buf, size_t size) {
 
 double hll_count(const struct HLL *hll) {
 	double alpha_mm;
+	uint32_t i;
+
 	switch (hll->bits) {
 		case 4:
 			alpha_mm = 0.673;
@@ -68,27 +70,27 @@ double hll_count(const struct HLL *hll) {
 			alpha_mm = 0.709;
 		break;
 		default:
-			alpha_mm = 0.7213 / (1.0 + 1.079 / hll->size);
+			alpha_mm = 0.7213 / (1.0 + 1.079 / (double)hll->size);
 		break;
 	}
 
-	alpha_mm *= (hll->size * hll->size);
+	alpha_mm *= ((double)hll->size * (double)hll->size);
 
 	double sum = 0;
-	for(uint32_t i = 0; i < hll->size; i++) {
+	for(i = 0; i < hll->size; i++) {
 		sum += 1.0 / (1 << hll->registers[i]);
 	}
 
 	double estimate = alpha_mm / sum;
 
-	if (estimate <= 5.0 / 2.0 * hll->size) {
+	if (estimate <= 5.0 / 2.0 * (double)hll->size) {
 		int zeros = 0;
 
-		for(uint32_t i = 0; i < hll->size; i++)
+		for(i = 0; i < hll->size; i++)
 			zeros += (hll->registers[i] == 0);
 
 		if(zeros)
-			estimate = hll->size * log((double)hll->size / zeros);
+			estimate = (double)hll->size * log((double)hll->size / zeros);
 
 	} else if (estimate > (1.0 / 30.0) * 4294967296.0) {
 		estimate = -4294967296.0 * log(1.0 - (estimate / 4294967296.0));
@@ -98,12 +100,14 @@ double hll_count(const struct HLL *hll) {
 }
 
 int hll_merge(struct HLL *dst, const struct HLL *src) {
+	uint32_t i;
+
 	if(dst->bits != src->bits) {
 		errno = EINVAL;
 		return -1;
 	}
 
-	for(uint32_t i = 0; i < dst->size; i++) {
+	for(i = 0; i < dst->size; i++) {
 		if(src->registers[i] > dst->registers[i])
 			dst->registers[i] = src->registers[i];
 	}
