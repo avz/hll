@@ -12,7 +12,7 @@ build: bin/hll-count
 
 bin/hll-count: lib/libhyperloglog.a main.o
 	mkdir -p bin
-	$(LD) -lm -lc $(LDFLAGS) -Llib main.o -lhyperloglog -o bin/hll-count
+	$(LD) -lc $(LDFLAGS) -Llib main.o -lhyperloglog -lm -o bin/hll-count
 
 lib/libhyperloglog.a: $(OBJS)
 	mkdir -p lib
