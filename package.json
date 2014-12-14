@@ -1,6 +1,6 @@
 {
 	"name": "hll",
-	"version": "0.0.1",
+	"version": "1.0.0",
 	"repo": "avz/hll",
 	"description": "HyperLogLog library",
 	"keywords": ["hll", "hyperloglog", "loglog"],
