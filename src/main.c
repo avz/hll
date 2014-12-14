@@ -33,7 +33,7 @@ int main(int argc, char * const argv[]) {
 
 	estimate = count_stdin(bits);
 
-	printf("%llu\n", (unsigned long long)estimate);
+	printf("%.0f\n", estimate);
 
 	return 0;
 }
@@ -46,6 +46,7 @@ void usage(const char *cmd) {
 
 static double count_stdin(uint8_t bits) {
 	struct HLL hll;
+	double count;
 	char line[16*1024];
 	ssize_t size = 0;
 	ssize_t r, i, last;
@@ -89,5 +90,9 @@ static double count_stdin(uint8_t bits) {
 		hll_add(&hll, line, (size_t)size);
 	}
 
-	return hll_count(&hll);
+	count = hll_count(&hll);
+
+	hll_destroy(&hll);
+
+	return count;
 }
