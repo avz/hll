@@ -1,3 +1,4 @@
+#include <limits.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -5,13 +6,54 @@
 #include <string.h>
 #include "hll.h"
 
-int main(int argc, const char *argv[]) {
+static double count_stdin(uint8_t bits);
+void usage(const char *cmd);
+
+int main(int argc, char * const argv[]) {
+	uint8_t bits = 16;
+	double estimate;
+	int ch;
+	unsigned long b;
+
+	while((ch = getopt(argc, argv, "b:")) != -1) {
+		switch(ch) {
+			case 'b':
+				b = strtoul(optarg, NULL, 10);
+				if(b == ULONG_MAX || b < 4 || b > 20) {
+					usage(argv[0]);
+				}
+
+				bits = (uint8_t)b;
+			break;
+			case '?':
+			default:
+				usage(argv[0]);
+		}
+	}
+
+	estimate = count_stdin(bits);
+
+	printf("%llu\n", (unsigned long long)estimate);
+
+	return 0;
+}
+
+void usage(const char *cmd) {
+	fprintf(stderr, "Usage: %s [-b bits]\n", cmd);
+	fprintf(stderr, "	-b bits: set registers count = 2^bits [default 16]\n");
+	exit(255);
+}
+
+static double count_stdin(uint8_t bits) {
 	struct HLL hll;
 	char line[16*1024];
 	ssize_t size = 0;
 	ssize_t r, i, last;
 
-	hll_init(&hll, 15);
+	if(hll_init(&hll, bits) == -1) {
+		perror("hll_init");
+		exit((errno & 0xff) ? errno & 0xff : 1);
+	}
 
 	while((r = read(STDIN_FILENO, line + size, sizeof(line) - (size_t)size))) {
 		if(r == -1) {
@@ -38,7 +80,7 @@ int main(int argc, const char *argv[]) {
 		}
 
 		if(size == sizeof(line)) {
-			fprintf(stderr, "%s: line is too long, ignore\n", argv[0]);
+			fprintf(stderr, "hll-count: line is too long, ignore\n");
 			size = 0;
 		}
 	}
@@ -47,7 +89,5 @@ int main(int argc, const char *argv[]) {
 		hll_add(&hll, line, (size_t)size);
 	}
 
-	printf("%llu\n", (unsigned long long)hll_count(&hll));
-
-	return 0;
+	return hll_count(&hll);
 }
