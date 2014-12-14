@@ -1,4 +1,4 @@
-HyperLogLog library for C programming language
+HyperLogLog library for C language
 ===
 
 See http://en.wikipedia.org/wiki/HyperLogLog
