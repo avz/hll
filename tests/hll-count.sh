@@ -73,6 +73,8 @@ test_count 18 1005777 3364646580
 test_count 19 999562 3771204784
 test_count 20 1000288 3106131572
 
+rm "$TESTLOG"
+
 if [ $ERRORS -gt 0 ]; then
 	echo "Errors count: $ERRORS" 1>&2
 	exit 1
