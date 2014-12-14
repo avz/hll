@@ -28,5 +28,5 @@ clean:
 	rm -f *.o bin/hll-count lib/hll.a
 	rm -rf bin lib
 
-test:
+test: build
 	sh ./tests/hll-count.sh
