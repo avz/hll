@@ -1,4 +1,4 @@
-CC=cc
+CC?=cc
 LD=$(CC)
 
 PROJECT=hll
