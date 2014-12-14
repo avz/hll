@@ -1,5 +1,6 @@
 HyperLogLog library for C language
 ===
+![Build status](https://travis-ci.org/avz/hll.svg?branch=master)
 
 See http://en.wikipedia.org/wiki/HyperLogLog
 
