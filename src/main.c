@@ -7,16 +7,18 @@
 #include <string.h>
 #include "hll.h"
 
-static double count_stdin(uint8_t bits);
+static double count_stdin(uint8_t bits, uint32_t *hash);
 void usage(const char *cmd);
 
 int main(int argc, char * const argv[]) {
 	uint8_t bits = 16;
+	uint32_t hash;
 	double estimate;
 	int ch;
+	int debug = 0;
 	unsigned long b;
 
-	while((ch = getopt(argc, argv, "b:")) != -1) {
+	while((ch = getopt(argc, argv, "db:")) != -1) {
 		switch(ch) {
 			case 'b':
 				b = strtoul(optarg, NULL, 10);
@@ -26,13 +28,19 @@ int main(int argc, char * const argv[]) {
 
 				bits = (uint8_t)b;
 			break;
+			case 'd':
+				debug = 1;
+			break;
 			case '?':
 			default:
 				usage(argv[0]);
 		}
 	}
 
-	estimate = count_stdin(bits);
+	estimate = count_stdin(bits, &hash);
+
+	if(debug)
+		printf("%llu ", (unsigned long long)hash);
 
 	printf("%.0f\n", estimate);
 
@@ -45,7 +53,7 @@ void usage(const char *cmd) {
 	exit(255);
 }
 
-static double count_stdin(uint8_t bits) {
+static double count_stdin(uint8_t bits, uint32_t *hash) {
 	struct HLL hll;
 	double count;
 	char line[16*1024];
@@ -92,6 +100,9 @@ static double count_stdin(uint8_t bits) {
 	}
 
 	count = hll_count(&hll);
+
+	if(hash)
+		*hash = _hll_hash(&hll);
 
 	hll_destroy(&hll);
 
