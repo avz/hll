@@ -9,15 +9,16 @@
 
 uint32_t MurmurHash3_x86_32(const void * key, uint32_t len, uint32_t seed) {
 	const uint8_t * data = (const uint8_t*)key;
-	const int32_t nblocks = len / 4;
+	const int32_t nblocks = (int32_t)len / 4;
 
 	uint32_t h1 = seed;
+	int i;
 
 	const uint32_t c1 = 0xcc9e2d51;
 	const uint32_t c2 = 0x1b873593;
 	const uint32_t * blocks = (const uint32_t *)(data + nblocks*4);
 
-	for(int i = -nblocks; i; i++)
+	for(i = -nblocks; i; i++)
 	{
 		uint32_t k1 = blocks[i];
 
