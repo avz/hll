@@ -40,19 +40,19 @@ void hll_destroy(struct HLL *hll) {
 	hll->registers = NULL;
 }
 
-void hll_add(struct HLL *hll, const void *buf, size_t size) {
-	uint32_t hash = MurmurHash3_x86_32((const char *)buf, (uint32_t)size, 0x5f61767a);
-
-	hll_add_hash(hll, hash);
-}
-
-void hll_add_hash(struct HLL *hll, uint32_t hash) {
+static __inline void _hll_add_hash(struct HLL *hll, uint32_t hash) {
 	uint32_t index = hash >> (32 - hll->bits);
 	uint8_t rank = _hll_rank(hash, hll->bits);
 
 	if(rank > hll->registers[index]) {
 		hll->registers[index] = rank;
 	}
+}
+
+void hll_add(struct HLL *hll, const void *buf, size_t size) {
+	uint32_t hash = MurmurHash3_x86_32((const char *)buf, (uint32_t)size, 0x5f61767a);
+
+	_hll_add_hash(hll, hash);
 }
 
 double hll_count(const struct HLL *hll) {
