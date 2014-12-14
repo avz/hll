@@ -33,15 +33,15 @@ test_count() {
 
 test_count 4 1103249
 test_count 5 1412738
-test_count 6 1227009
+test_count 6 1227010
 test_count 7 1124294
 test_count 8 1063738
-test_count 9 1020269
+test_count 9 1020270
 test_count 10 1009955
 test_count 11 986528
-test_count 12 984060
+test_count 12 984061
 test_count 13 975120
-test_count 14 969760
+test_count 14 969761
 test_count 15 987246
 test_count 16 997976
 test_count 17 999960
