@@ -75,6 +75,11 @@ Get estimated set size
 double hll_count(const struct HLL *hll);
 ```
 
+Merge storages
+```c
+int hll_merge(struct HLL *dst, const struct HLL *src);
+```
+
 Cleanup
 ```c
 void hll_destroy(struct HLL *hll);
