@@ -117,14 +117,15 @@ int hll_merge(struct HLL *dst, const struct HLL *src) {
 
 int hll_load(struct HLL *hll, const void *registers, size_t size) {
 	uint8_t bits = 0;
+	size_t s = size;
 
-	while(size) {
-		bits++;
-
-		if(size & 1)
+	while(s) {
+		if(s & 1)
 			break;
 
-		size >>= 1;
+		bits++;
+
+		s >>= 1;
 	}
 
 	if(!bits || (1 << bits) != size) {
