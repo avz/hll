@@ -9,64 +9,6 @@
 #include "../deps/MurmurHash3/MurmurHash3.h"
 #include "hll.h"
 
-static __inline uint32_t _hash(const void *buf, size_t size) {
-	return MurmurHash3_x86_32((const char *)buf, (uint32_t)size, 0x5f61767a);
-}
-
-static __inline uint8_t _hll_rank(uint32_t hash, uint8_t bits) {
-	uint8_t i;
-
-	for(i = 1; i <= 32 - bits; i++) {
-		if(hash & 1)
-			break;
-
-		hash >>= 1;
-	}
-
-	return i;
-}
-
-/**
- * Number of bits per register
- * @param bits
- * @return
- */
-static __inline uint8_t _hll_registerSize(uint8_t bits) {
-	if(bits >= 4 && bits <= 16)
-		return 4;
-
-	if(bits >= 17 && bits <= 20)
-		return 5;
-
-	assert(bits >= 4 && bits <= 20);
-}
-
-/**
- * Calculate offset of first bit of specified register
- * @param bits
- * @param
- * @return
- */
-static __inline size_t _hll_offset(uint8_t bits, size_t reg) {
-	uint8_t regSize = _hll_registerSize(bits);
-
-	return reg * regSize;
-}
-
-/**
- * Get buffer size for N = 2^bits registers
- * @param bits
- * @return buffer size in bytes
- */
-static __inline size_t _hll_size(uint8_t bits) {
-	size_t bitsCount = _hll_offset(bits, (size_t)1 << bits);
-
-	if(bitsCount % 8)
-		return bitsCount / 8 + 1;
-
-	return bitsCount / 8;
-}
-
 int hll_init(struct HLL *hll, uint8_t bits) {
 	if(bits < 4 || bits > 20) {
 		errno = ERANGE;
@@ -86,6 +28,19 @@ void hll_destroy(struct HLL *hll) {
 	hll->registers = NULL;
 }
 
+static __inline uint8_t _hll_rank(uint32_t hash, uint8_t bits) {
+	uint8_t i;
+
+	for(i = 1; i <= 32 - bits; i++) {
+		if(hash & 1)
+			break;
+
+		hash >>= 1;
+	}
+
+	return i;
+}
+
 static __inline void _hll_add_hash(struct HLL *hll, uint32_t hash) {
 	uint32_t index = hash >> (32 - hll->bits);
 	uint8_t rank = _hll_rank(hash, hll->bits);
@@ -93,6 +48,10 @@ static __inline void _hll_add_hash(struct HLL *hll, uint32_t hash) {
 	if(rank > hll->registers[index]) {
 		hll->registers[index] = rank;
 	}
+}
+
+static __inline uint32_t _hash(const void *buf, size_t size) {
+	return MurmurHash3_x86_32((const char *)buf, (uint32_t)size, 0x5f61767a);
 }
 
 void hll_add(struct HLL *hll, const void *buf, size_t size) {
@@ -187,6 +146,47 @@ int hll_load(struct HLL *hll, const void *registers, size_t size) {
 	return 0;
 }
 
-extern uint32_t _hll_hash(const struct HLL *hll) {
+uint32_t _hll_hash(const struct HLL *hll) {
 	return _hash(hll->registers, hll->size);
+}
+
+/**
+ * Number of bits per register
+ * @param bits
+ * @return
+ */
+static __inline uint8_t _hll_registerSize(uint8_t bits) {
+	if(bits >= 4 && bits <= 16)
+		return 4;
+
+	if(bits >= 17 && bits <= 20)
+		return 5;
+
+	assert(bits >= 4 && bits <= 20);
+}
+
+/**
+ * Calculate offset of first bit of specified register
+ * @param bits
+ * @param
+ * @return
+ */
+static __inline size_t _hll_offset(uint8_t bits, size_t reg) {
+	uint8_t regSize = _hll_registerSize(bits);
+
+	return reg * regSize;
+}
+
+/**
+ * Get buffer size for N = 2^bits registers
+ * @param bits
+ * @return buffer size in bytes
+ */
+static __inline size_t _hll_size(uint8_t bits) {
+	size_t bitsCount = _hll_offset(bits, (size_t)1 << bits);
+
+	if(bitsCount % 8)
+		return bitsCount / 8 + 1;
+
+	return bitsCount / 8;
 }
