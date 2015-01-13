@@ -19,10 +19,10 @@ lib/libhyperloglog.a: $(OBJS)
 	ar rcs lib/libhyperloglog.a $(OBJS)
 
 .c.o:
-	$(CC) -c -fPIC -std=c90 -g -Wall -Wconversion -Werror $(CFLAGS) src/$*.c
+	$(CC) -c -fPIC -ansi -g -Wall -Wconversion -Werror $(CFLAGS) src/$*.c
 
 MurmurHash3.o:
-	$(CC) -c -fPIC -std=c90 -g -Wall -Wconversion -Werror $(CFLAGS) deps/MurmurHash3/MurmurHash3.c
+	$(CC) -c -fPIC -ansi -g -Wall -Wconversion -Werror $(CFLAGS) deps/MurmurHash3/MurmurHash3.c
 
 clean:
 	rm -f *.o bin/hll-count lib/hll.a
