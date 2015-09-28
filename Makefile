@@ -18,8 +18,8 @@ lib/libhyperloglog.a: $(OBJS)
 	mkdir -p lib
 	ar rcs lib/libhyperloglog.a $(OBJS)
 
-.c.o:
-	$(CC) -c -fPIC -ansi -g -Wall -Wconversion -Werror $(CFLAGS) src/$*.c
+hll.o:
+	$(CC) -c -fPIC -ansi -g -Wall -Wconversion -Werror $(CFLAGS) src/hll.c
 
 MurmurHash3.o:
 	$(CC) -c -fPIC -ansi -g -Wall -Wconversion -Werror $(CFLAGS) deps/MurmurHash3/MurmurHash3.c
